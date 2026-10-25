@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>{{ iglesia.nombre }} · Curicó</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <script>
+        // Recuerda el tema (claro/oscuro) que eligió la persona
+        try {
+            const tema = localStorage.getItem('tema');
+            if (tema) document.documentElement.dataset.theme = tema;
+        } catch (e) {}
+    </script>
+</head>
+<body>
+
+    <!-- ================= MENÚ ================= -->
+    <header class="navbar">
+        <a href="#inicio" class="marca">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+            <span class="marca-texto">
+                <strong>{{ iglesia.nombre }}</strong>
+                <small>{{ iglesia.sigla }}</small>
+            </span>
+        </a>
+
+        <nav class="menu">
+            <a href="#inicio">Inicio</a>
+            <div class="desplegable">
+                <button class="desplegable-btn" type="button">Nosotros <span class="flecha">{{ icono("flecha_abajo") }}</span></button>
+                <div class="submenu">
+                    <a href="#historia">Nuestra historia</a>
+                    <a href="#pastores">Pastores</a>
+                    <a href="#radio">Radio</a>
+                </div>
+            </div>
+            <a href="#ministerios">Ministerios</a>
+            <a href="#cultos">Cultos</a>
+            <a href="#galeria">Galería</a>
+            <a href="{{ url_for('noticias') }}">Noticias</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+
+        <div class="acciones">
+            <a href="#envivo" class="pill-vivo" hidden><span class="punto-rojo"></span> EN VIVO</a>
+            <button class="boton-tema" type="button" aria-label="Cambiar tema">
+                <span class="icono-luna">{{ icono("luna") }}</span><span class="icono-sol">{{ icono("sol") }}</span>
+            </button>
+            <a href="#contacto" class="boton boton-menu">Visítanos →</a>
+            <button class="hamburguesa" type="button" aria-label="Abrir menú">{{ icono("menu") }}</button>
+        </div>
+    </header>
+
+    <!-- Menú para celular -->
+    <div class="fondo-panel"></div>
+    <aside class="panel-movil" aria-label="Menú">
+        <button class="cerrar-panel" type="button" aria-label="Cerrar menú">{{ icono("cerrar") }}</button>
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="panel-logo">
+        <a href="#inicio">Inicio</a>
+        <a href="#historia">Nuestra historia</a>
+        <a href="#pastores">Pastores</a>
+        <a href="#radio">Radio</a>
+        <a href="#ministerios">Ministerios</a>
+        <a href="#cultos">Cultos</a>
+        <a href="#galeria">Galería</a>
+        <a href="{{ url_for('noticias') }}">Noticias</a>
+        <a href="#contacto">Escríbenos / Oración</a>
+        <a href="#contacto" class="boton">Visítanos →</a>
+    </aside>
+
+    <!-- ================= PORTADA (con movimiento al bajar) ================= -->
+    <section id="inicio" class="hero-scroll">
+        <div class="hero-sticky">
+            <div class="hero-fondo"></div>
+            <div class="hero-velo"></div>
+
+            <!-- Parte 1: bienvenida -->
+            <div class="hero hero-fase1">
+                <div class="hero-contenido">
+                    <p class="hero-tag">Iglesia en Curicó</p>
+                    <h1>Bienvenido a la <span>Casa de Dios</span></h1>
+                    <p class="hero-sub">{{ iglesia.lema }}. {{ iglesia.invitacion }}</p>
+                    <div class="hero-botones">
+                        <a href="#contacto" class="boton">Planifica tu visita →</a>
+                        <a href="#cultos" class="boton boton-borde">Ver horarios</a>
+                    </div>
+                </div>
+                <img class="hero-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="Escudo {{ iglesia.nombre }}">
+            </div>
+
+            <!-- Parte 2: palabra gigante -->
+            <div class="hero-cortina"></div>
+            <div class="hero-fase2" aria-hidden="true">
+                <img class="fase2-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="">
+                <p class="palabra-gigante">BETHEL</p>
+                <p class="hero-fase2-sub">Ejército Evangélico de Chile · Curicó</p>
+            </div>
+
+            <div class="hero-indicador">Desliza</div>
+        </div>
+    </section>
+
+    <!-- ================= VERSÍCULO DEL DÍA ================= -->
+    <section class="versiculo-dia">
+        <p class="etiqueta">Versículo del día</p>
+        <blockquote>“{{ versiculo.texto }}”</blockquote>
+        <p class="cita">{{ versiculo.cita }} · Reina-Valera</p>
+    </section>
+
+    <!-- ================= EN VIVO: YOUTUBE + RADIO (un solo apartado) ================= -->
+    <section class="medios" id="medios">
+        <div class="medios-cabecera">
+            <p class="etiqueta">{{ icono("senal") }} En vivo</p>
+            <h2>Adora con nosotros desde donde estés</h2>
+        </div>
+
+        <div class="medios-grid">
+
+                    <!-- ===== IZQUIERDA: TRANSMISIONES (FACEBOOK + YOUTUBE) ===== -->
+            <article id="envivo" class="medio-card medio-yt" data-plataforma="facebook"
+                     data-api-facebook="{{ url_for('api_facebook') }}"
+                     data-api-youtube="{{ url_for('api_youtube') }}">
+                <header class="medio-titulo vivo-cabecera">
+                    <span class="medio-icono vivo-icono">
+                        <span class="solo-facebook">{{ icono("facebook") }}</span>
+                        <span class="solo-youtube">{{ icono("youtube") }}</span>
+                    </span>
+                    <div>
+                        <small>Transmisiones en vivo</small>
+                        <h3>
+                            <span class="solo-facebook">{{ facebook.nombre }} en Facebook</span>
+                            <span class="solo-youtube">{{ youtube.nombre }}</span>
+                        </h3>
+                    </div>
+                    <div class="vivo-pestanas" role="tablist" aria-label="Elegir transmisión">
+                        <button type="button" class="vivo-pestana" data-plataforma="facebook" role="tab">
+                            {{ icono("facebook") }} Facebook <span class="vivo-marca"></span>
+                        </button>
+                        <button type="button" class="vivo-pestana" data-plataforma="youtube" role="tab">
+                            {{ icono("youtube") }} YouTube <span class="vivo-marca"></span>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="envivo-pantalla">
+                    <div class="envivo-marco solo-facebook" id="marco-facebook"></div>
+                    <div class="envivo-marco solo-youtube" id="marco-youtube"></div>
+                    <span class="envivo-insignia"><span class="punto-rojo"></span> <span class="envivo-insignia-texto">Fuera del aire</span></span>
+                </div>
+
+                <p class="envivo-estado"><span class="punto-rojo"></span> <span id="envivo-estado-texto">Revisando si estamos en vivo...</span></p>
+                <div class="envivo-botones medio-acciones">
+                    <a href="{{ facebook.enlace }}" target="_blank" class="boton-fb solo-facebook">{{ icono("facebook") }} Ver en Facebook</a>
+                    <a href="{{ youtube.enlace }}" target="_blank" class="boton-yt solo-youtube">{{ icono("youtube") }} Ver canal</a>
+                    <a href="{{ youtube.enlace }}?sub_confirmation=1" target="_blank" class="boton-suscribir solo-youtube">{{ icono("campana") }} Suscribirse</a>
+                </div>
+                <template id="icono-play">{{ icono("play") }}</template>
+                <template id="icono-facebook">{{ icono("facebook") }}</template>
+            </article>
+            
+            <!-- ===== DERECHA: RADIO ===== -->
+            <article id="radio" class="medio-card medio-radio">
+                <header class="medio-titulo">
+                    <span class="medio-icono">{{ icono("antena") }}</span>
+                    <div>
+                        <small>Radio en vivo</small>
+                        <h3>{{ radio.nombre }}</h3>
+                    </div>
+                </header>
+
+                <div class="radio-cabecera">
+                    <img class="radio-afiche" src="{{ url_for('static', filename='img/radio.jpg') }}" alt="{{ radio.nombre }}">
+                    <div>
+                        <p class="radio-lema">{{ radio.lema }}</p>
+                        <p class="medio-texto">En la voz del {{ radio.locutor }}, desde Curicó.</p>
+                    </div>
+                </div>
+
+                <div class="radio-estado" id="radio-estado"
+                     data-api="{{ url_for('api_radio') }}"
+                     data-programacion='{{ programacion_radio | tojson }}'>
+                    <span class="radio-hora-icono">{{ icono("antena") }}</span>
+                    <div>
+                        <small class="radio-estado-etiqueta">Programación</small>
+                        <strong class="radio-estado-titulo">Revisando la señal...</strong>
+                        <span class="radio-estado-detalle"></span>
+                    </div>
+                </div>
+
+                <div class="en-vivo">
+                    <button class="boton-vivo" type="button" data-stream="{{ radio.envivo }}">
+                        <span class="punto-vivo"></span>
+                        <span class="texto-vivo">Escúchanos en vivo</span>
+                        <span class="icono-vivo"><span class="i-play">{{ icono("play") }}</span><span class="i-pausa">{{ icono("pausa") }}</span></span>
+                    </button>
+                    <a href="{{ radio.envivo }}" target="_blank" class="enlace-vivo">¿No suena? Abre la radio en otra pestaña</a>
+                </div>
+
+                <div class="medio-acciones radio-acciones">
+                    <a href="{{ radio.app }}" target="_blank" class="boton-play">
+                        <span class="play-icono">{{ icono("google_play") }}</span>
+                        <span>
+                            <small>Descarga la app en</small>
+                            <strong>Google Play</strong>
+                        </span>
+                    </a>
+                    <a href="https://wa.me/{{ iglesia.whatsapp }}" target="_blank" class="boton-wsp-radio">{{ icono("whatsapp") }} WhatsApp</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- ================= TARJETAS ================= -->
+    <section class="seccion">
+        <p class="etiqueta">Bienvenido</p>
+        <h2>Conoce nuestra iglesia</h2>
+        <div class="tarjetas">
+            {% for t in tarjetas %}
+            <a href="{{ t.enlace }}" class="tarjeta">
+                <img src="{{ url_for('static', filename='img/' + t.imagen) }}" alt="{{ t.titulo }}">
+                <div class="tarjeta-texto">
+                    <span class="tarjeta-cat">{{ t.categoria }}</span>
+                    <h3>{{ t.titulo }}</h3>
+                    <p>{{ t.texto }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ================= IMAGEN QUE SE EXPANDE ================= -->
+    <section class="expandir">
+        <div class="expandir-sticky">
+            <div class="expandir-marco">
+                <img src="{{ url_for('static', filename='img/foto3.jpg') }}" alt="Congregación de {{ iglesia.nombre }}">
+                <div class="expandir-texto">
+                    <p class="etiqueta">Templo Bethel · Curicó</p>
+                    <h2>Una familia en Cristo</h2>
+                    <p class="expandir-desc">Más que un lugar de reunión: una congregación que adora, sirve y camina unida en la fe.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= HISTORIA ================= -->
+    <section id="historia" class="seccion fondo-alterno">
+        <div class="historia">
+            <div class="historia-texto">
+                <p class="etiqueta">Nosotros</p>
+                <h2>Nuestra historia</h2>
+                {% for parrafo in historia %}
+                <p>{{ parrafo }}</p>
+                {% endfor %}
+            </div>
+            <img class="historia-img" src="{{ url_for('static', filename='img/foto3.jpg') }}" alt="Congregación de {{ iglesia.nombre }}">
+        </div>
+    </section>
+
+    <!-- ================= PASTORES ================= -->
+    <section id="pastores" class="seccion">
+        <p class="etiqueta">Nuestros Pastores</p>
+        <h2>Pastores de la Iglesia</h2>
+        <div class="pastores">
+            <div class="pastor-tarjeta">
+                <img src="{{ url_for('static', filename='img/pastor.png') }}" alt="Pastor {{ iglesia.pastor }}">
+                <p class="cargo">Pastor</p>
+                <h3>{{ iglesia.pastor }}</h3>
+            </div>
+            <div class="pastor-tarjeta">
+                <img src="{{ url_for('static', filename='img/pastora.png') }}" alt="Pastora {{ iglesia.pastora }}">
+                <p class="cargo">Pastora</p>
+                <h3>{{ iglesia.pastora }}</h3>
+            </div>
+        </div>
+        <p class="mensaje-pastores">{{ iglesia.mensaje_pastores }}</p>
+    </section>
+
+    <!-- ================= MINISTERIOS ================= -->
+    <section id="ministerios" class="seccion ministerios-lista">
+        <div class="min-cabecera">
+            <div>
+                <p class="etiqueta">Comunidad</p>
+                <h2>Ministerios</h2>
+            </div>
+            <p>Hay un lugar para cada persona. Descubre dónde puedes crecer, servir y ser parte de la familia.</p>
+        </div>
+
+        {% set fondos = ["foto1.jpg", "foto3.jpg", "foto2.jpg", "portada.jpg"] %}
+        <div class="min-lista">
+            {% for m in ministerios %}
+            <a href="#contacto" class="min-fila">
+                <img class="min-fondo" src="{{ url_for('static', filename='img/' + fondos[loop.index0 % fondos|length]) }}" alt="">
+                <span class="min-icono">{{ icono(m.icono) }}</span>
+                <p class="min-desc">{{ m.descripcion }}</p>
+                <span class="min-nombre">{{ m.nombre }}</span>
+                <span class="min-flecha">{{ icono("arriba") }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+       <!-- ================= CULTOS ================= -->
+    <section id="cultos" class="seccion cultos-seccion">
+        <p class="etiqueta">Te esperamos</p>
+        <h2>Días de Culto</h2>
+        <p class="seccion-intro">Abrimos nuestras puertas tres veces por semana. Ven tal como eres: aquí hay un lugar para ti.</p>
+
+        <div class="cultos-panel" data-cultos='{{ cultos | tojson }}'>
+
+            <!-- Izquierda: el próximo culto con cuenta regresiva -->
+            <div class="culto-destacado">
+                <img class="cd-fondo" src="{{ url_for('static', filename='img/foto3.jpg') }}" alt="">
+                <div class="cd-contenido">
+                    <p class="cd-etiqueta"><span class="cd-punto"></span> <span class="cd-estado">Próximo culto</span></p>
+                    <p class="cd-dia">{{ cultos[0].dia }}</p>
+                    <p class="cd-fecha">{{ cultos[0].hora }}</p>
+
+                    <div class="cd-cuenta">
+                        <div><strong data-u="d">–</strong><small>días</small></div>
+                        <div><strong data-u="h">–</strong><small>horas</small></div>
+                        <div><strong data-u="m">–</strong><small>minutos</small></div>
+                    </div>
+
+                    {% set dias_culto = cultos | map(attribute='dia') | list %}
+                    <div class="cd-semana" aria-label="Días de culto en la semana">
+                        {% for corto, largo in [("L","Lunes"),("M","Martes"),("M","Miércoles"),("J","Jueves"),("V","Viernes"),("S","Sábado"),("D","Domingo")] %}
+                        <span class="{% if largo in dias_culto %}activo{% endif %}" title="{{ largo }}">{{ corto }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ iglesia.mapa | urlencode }}" target="_blank" class="boton boton-icono cd-boton">{{ icono("ubicacion") }} Cómo llegar</a>
+                </div>
+            </div>
+
+            <!-- Derecha: los días de la semana -->
+            <div class="cultos-lista">
+                {% for culto in cultos %}
+                <article class="culto-fila" data-dia="{{ culto.dia }}">
+                    <span class="cf-dia-corto">{{ culto.dia[:3] }}</span>
+                    <div class="cf-info">
+                        <h3>{{ culto.dia }}</h3>
+                        <p>{{ icono("calendario") }} {{ culto.nombre }} · Todas las semanas</p>
+                    </div>
+                    <span class="cf-proximo">Próximo</span>
+                    <span class="cf-hora">{{ icono("reloj") }} {{ culto.hora }}</span>
+                </article>
+                {% endfor %}
+
+                <div class="cultos-direccion">
+                    <span class="cultos-direccion-icono">{{ icono("ubicacion") }}</span>
+                    <div>
+                        <small>Dirección</small>
+                        <strong>{{ iglesia.direccion }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= GALERÍA ================= -->
+    <section id="galeria" class="seccion galeria-oscura">
+        <div class="galeria-cabecera">
+            <div>
+                <p class="etiqueta">Nuestra iglesia</p>
+                <h2>Galería</h2>
+            </div>
+            <p>Momentos de adoración, comunión y servicio de nuestra congregación.</p>
+        </div>
+        <div class="galeria{% if fotos|length >= 10 %} muchas{% endif %}">
+            {% for foto in fotos %}
+            <figure class="galeria-item">
+                <img src="{{ url_for('static', filename='img/' + foto) }}" alt="Foto de la iglesia" loading="lazy">
+            </figure>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- ================= ORACIÓN Y CONTACTO ================= -->
+    <section id="contacto" class="seccion">
+        <p class="etiqueta">Peticiones de oración y consultas</p>
+        <h2>Estamos para orar contigo</h2>
+        <p class="seccion-intro">Ninguna carga es demasiado pequeña para presentarla ante Dios.
+           Déjanos tu petición o tu pregunta y te responderemos a la brevedad.</p>
+
+        <div class="escribenos oracion-card">
+
+            <!-- Panel izquierdo -->
+            <aside class="oracion-panel">
+                <span class="oracion-panel-icono">{{ icono("oracion") }}</span>
+                <h3>Un equipo que intercede por ti</h3>
+                <p>Cada petición que recibimos es presentada en oración por nuestros pastores
+                   y el equipo de intercesión de {{ iglesia.nombre }}, con amor y total discreción.</p>
+
+                <blockquote class="oracion-versiculo">
+                    “La oración eficaz del justo puede mucho.”
+                    <cite>Santiago 5:16</cite>
+                </blockquote>
+
+                <ul class="oracion-datos">
+                    <li>
+                        {{ icono("telefono") }}
+                        <div><small>Llámanos o escríbenos</small>
+                            <a href="https://wa.me/{{ iglesia.whatsapp }}" target="_blank">{{ iglesia.whatsapp_texto }}</a></div>
+                    </li>
+                    <li>
+                        {{ icono("correo") }}
+                        <div><small>Correo electrónico</small>
+                            <a href="mailto:{{ iglesia.correo }}">{{ iglesia.correo }}</a></div>
+                    </li>
+                    <li>
+                        {{ icono("calendario") }}
+                        <div><small>Nos reunimos</small>
+                            <span>{% for c in cultos %}{{ c.dia }}{% if loop.revindex == 2 %} y {% elif not loop.last %}, {% endif %}{% endfor %} · {{ cultos[0].hora }}</span></div>
+                    </li>
+                    <li>
+                        {{ icono("ubicacion") }}
+                        <div><small>Encuéntranos</small>
+                            <span>{{ iglesia.direccion }}</span></div>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Formulario -->
+            <form class="formulario oracion-form" id="formulario" data-whatsapp="{{ iglesia.whatsapp }}" data-correo="{{ iglesia.correo }}">
+                <h3>Envíanos tu mensaje</h3>
+                <p class="oracion-form-sub">Completa tus datos y elige cómo prefieres enviarlo.</p>
+
+                <fieldset class="motivos">
+                    <legend>¿En qué podemos acompañarte?</legend>
+                    <label class="chip"><input type="radio" name="motivo" value="Petición de oración" checked><span>Pedir oración</span></label>
+                    <label class="chip"><input type="radio" name="motivo" value="Consulta o pregunta"><span>Hacer una consulta</span></label>
+                    <label class="chip"><input type="radio" name="motivo" value="Quiero visitar la iglesia"><span>Visitar la iglesia</span></label>
+                    <label class="chip"><input type="radio" name="motivo" value="Otro motivo"><span>Otro</span></label>
+                </fieldset>
+
+                <div class="campos-dobles">
+                    <label>Nombre
+                        <input name="nombre" required placeholder="¿Cómo te llamas?">
+                    </label>
+                    <label>Correo (opcional)
+                        <input name="correo" type="email" placeholder="tucorreo@ejemplo.com">
+                    </label>
+                </div>
+
+                <label>Tu petición o consulta
+                    <textarea name="mensaje" rows="5" required placeholder="Escribe con confianza, este es un espacio seguro..."></textarea>
+                </label>
+
+                <div class="form-botones">
+                    <button type="submit" class="boton boton-icono">{{ icono("whatsapp") }} Enviar por WhatsApp</button>
+                    <button type="button" class="boton boton-secundario boton-icono" id="enviar-correo">{{ icono("correo") }} Enviar por correo</button>
+                </div>
+                <p class="form-nota">{{ icono("candado") }} Tu mensaje es confidencial y solo lo leerá el equipo pastoral.</p>
+                <p class="form-ok">{{ icono("check") }} ¡Gracias por escribirnos! Solo falta presionar <strong>Enviar</strong> en WhatsApp o en tu correo. Desde ya, estamos orando por ti.</p>
+            </form>
+        </div>
+
+        <iframe class="mapa" src="https://www.google.com/maps?q={{ iglesia.mapa | urlencode }}&output=embed" loading="lazy"></iframe>
+    </section>
+
+    <!-- ================= PIE DE PÁGINA ================= -->
+    <footer>
+        <div class="pie">
+            <div class="pie-marca">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo">
+                <h3>{{ iglesia.nombre }}</h3>
+                <p>{{ iglesia.lema }}</p>
+                <a href="https://wa.me/{{ iglesia.whatsapp }}" target="_blank" class="boton boton-icono">{{ icono("whatsapp") }} WhatsApp</a>
+            </div>
+            <div>
+                <h4>Explorar</h4>
+                <a href="#historia">Nuestra historia</a>
+                <a href="#pastores">Pastores</a>
+                <a href="#ministerios">Ministerios</a>
+                <a href="#cultos">Cultos</a>
+                <a href="#contacto">Pedir oración</a>
+                <a href="#contacto">Visítanos</a>
+            </div>
+            <div>
+                <h4>Redes</h4>
+                <a href="{{ iglesia.facebook }}" target="_blank">Facebook</a>
+                <a href="https://wa.me/{{ iglesia.whatsapp }}" target="_blank">WhatsApp</a>
+                <a href="mailto:{{ iglesia.correo }}">Correo</a>
+            </div>
+            <div>
+                <h4>Visítanos</h4>
+                <p>{{ iglesia.direccion }}</p>
+                <p>Pastores {{ iglesia.pastor }} y {{ iglesia.pastora }}</p>
+            </div>
+        </div>
+        <p class="pie-final">© 2026 {{ iglesia.nombre }} · Todos los derechos reservados</p>
+        <div class="pie-gigante" aria-hidden="true">BETHEL</div>
+    </footer>
+
+    <!-- Botones flotantes -->
+    <a href="https://wa.me/{{ iglesia.whatsapp }}" target="_blank" class="burbuja-whatsapp" aria-label="Escríbenos por WhatsApp">{{ icono("whatsapp") }}</a>
+    <button class="arriba" type="button" aria-label="Volver arriba">{{ icono("arriba") }}</button>
+
+    <!-- Visor de fotos en grande -->
+    <div class="visor"><img alt="Foto ampliada"></div>
+
+    <script src="{{ url_for('static', filename='efectos.js') }}"></script>
+</body>
+</html>

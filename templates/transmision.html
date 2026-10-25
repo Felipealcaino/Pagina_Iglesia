@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Panel de transmisión · {{ iglesia.nombre }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            padding: 30px 16px;
+            background: radial-gradient(circle at 15% 10%, rgba(201, 162, 77, 0.15), transparent 40%),
+                        linear-gradient(160deg, #0d1a36, #070e20);
+            color: #1d2333;
+            font-family: 'Lato', sans-serif;
+        }
+        .panel {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 34px 30px;
+            border-radius: 22px;
+            background: #fff;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+        }
+        .cabecera { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+        .cabecera img { width: 56px; height: 56px; border-radius: 50%; }
+        .cabecera small { color: #c9a24d; font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 26px; line-height: 1.15; }
+        .estado {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 22px; padding: 14px 16px;
+            border-radius: 14px; background: #f1f2f5; font-weight: 700;
+        }
+        .estado.vivo { background: #fdecec; color: #b3261e; }
+        .punto { width: 12px; height: 12px; border-radius: 50%; background: #9aa1ad; flex: none; }
+        .vivo .punto { background: #e53935; animation: latido 1.4s infinite; }
+        @keyframes latido { 50% { opacity: 0.3; } }
+        .estado span small { display: block; color: #687083; font-weight: 400; font-size: 13px; word-break: break-all; }
+        .aviso { margin-bottom: 18px; padding: 12px 14px; border-radius: 12px; font-size: 15px; }
+        .aviso.ok { background: #e7f6ec; color: #1e7b3a; }
+        .aviso.error { background: #fdecec; color: #b3261e; }
+        label { display: block; margin-bottom: 16px; font-size: 14px; font-weight: 700; }
+        label small { color: #687083; font-weight: 400; }
+        input {
+            width: 100%; margin-top: 6px; padding: 13px 14px;
+            border: 1px solid #d5d8de; border-radius: 12px;
+            font: inherit; font-size: 15px;
+        }
+        input:focus { border-color: #c9a24d; outline: 3px solid rgba(201, 162, 77, 0.25); }
+        .botones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        button {
+            padding: 15px; border: none; border-radius: 30px;
+            font: inherit; font-size: 15px; font-weight: 900; cursor: pointer;
+        }
+        .comenzar { background: #e53935; color: #fff; box-shadow: 0 10px 25px rgba(229, 57, 53, 0.35); }
+        .terminar { background: #eceef2; color: #1d2333; }
+        .ayuda { margin-top: 26px; padding-top: 20px; border-top: 1px solid #e6e8ec; font-size: 14px; color: #4a5160; }
+        .ayuda h2 { margin-bottom: 10px; font-size: 15px; color: #1d2333; }
+        .ayuda ol { padding-left: 20px; }
+        .ayuda li { margin-bottom: 6px; }
+        .volver { display: inline-block; margin-top: 22px; color: #c9a24d; font-weight: 700; text-decoration: none; }
+        @media (max-width: 480px) { .botones { grid-template-columns: 1fr; } .panel { padding: 26px 20px; } }
+    </style>
+</head>
+<body>
+    <main class="panel">
+        <div class="cabecera">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="">
+            <div>
+                <small>{{ iglesia.nombre }}</small>
+                <h1>Panel de transmisión de Facebook</h1>
+            </div>
+        </div>
+
+        {% if datos.en_vivo %}
+        <div class="estado vivo">
+            <span class="punto"></span>
+            <span>En vivo ahora en la página{% if datos.titulo %}: {{ datos.titulo }}{% endif %}
+                <small>{{ datos.video }}</small></span>
+        </div>
+        {% else %}
+        <div class="estado">
+            <span class="punto"></span>
+            <span>Fuera del aire
+                {% if datos.ultimo %}<small>Última transmisión: {{ datos.ultimo }}</small>{% endif %}</span>
+        </div>
+        {% endif %}
+
+        {% if mensaje %}<p class="aviso ok">{{ mensaje }}</p>{% endif %}
+        {% if error %}<p class="aviso error">{{ error }}</p>{% endif %}
+
+        <form method="post">
+            <label>Clave
+                <input type="password" name="clave" required autocomplete="current-password">
+            </label>
+            <label>Enlace de la transmisión de Facebook
+                <input type="url" name="enlace" placeholder="https://www.facebook.com/.../videos/...">
+            </label>
+            <label>Título <small>(opcional, por ejemplo: Culto de jueves)</small>
+                <input type="text" name="titulo" maxlength="120">
+            </label>
+            <div class="botones">
+                <button type="submit" name="accion" value="comenzar" class="comenzar">● Comenzar transmisión</button>
+                <button type="submit" name="accion" value="terminar" class="terminar" formnovalidate>Terminar transmisión</button>
+            </div>
+        </form>
+
+        <div class="ayuda">
+            <h2>¿Cómo copiar el enlace del en vivo?</h2>
+            <ol>
+                <li>Comienza la transmisión en vivo en Facebook. La publicación debe estar en <strong>Público</strong> 🌎.</li>
+                <li>En la publicación del en vivo, toca los <strong>tres puntitos (···)</strong> y elige <strong>Copiar enlace</strong>.</li>
+                <li>Pégalo arriba, escribe la clave y presiona <strong>Comenzar transmisión</strong>.</li>
+                <li>Al terminar el culto, vuelve aquí y presiona <strong>Terminar transmisión</strong>. Si se te olvida, se apaga sola después de {{ horas }} horas.</li>
+            </ol>
+        </div>
+
+        <a class="volver" href="{{ url_for('inicio') }}#envivo">← Ver la página de la iglesia</a>
+    </main>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Bethel Noticias · Iglesia, profecía y mundo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='noticias.css') }}">
+    <script>
+        try {
+            const tema = localStorage.getItem('tema');
+            if (tema) document.documentElement.dataset.theme = tema;
+        } catch (e) {}
+    </script>
+</head>
+<body data-api="{{ url_for('api_noticias') }}">
+
+    <!-- ================= BARRA SUPERIOR ================= -->
+    <div class="n-barra">
+        <div class="n-ancho n-barra-fila">
+            <span class="n-hoy" id="n-hoy"></span>
+            <div class="n-barra-enlaces">
+                <a href="{{ url_for('inicio') }}#radio">{{ icono("antena") }} Radio en vivo</a>
+                <a href="{{ url_for('inicio') }}#envivo">{{ icono("youtube") }} Cultos en vivo</a>
+                <button class="n-tema" type="button" aria-label="Cambiar tema">
+                    <span class="icono-luna">{{ icono("luna") }}</span><span class="icono-sol">{{ icono("sol") }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= CABECERA ================= -->
+    <header class="n-cabecera">
+        <div class="n-ancho n-cabecera-fila">
+            <a href="{{ url_for('noticias') }}" class="n-marca">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo {{ iglesia.nombre }}">
+                <span>
+                    <strong>Bethel <em>Noticias</em></strong>
+                    <small>Lo que pasa en el mundo, a la luz de la Palabra</small>
+                </span>
+            </a>
+            <a href="{{ url_for('inicio') }}" class="n-volver">{{ icono("volver") }} Volver a {{ iglesia.nombre }}</a>
+        </div>
+    </header>
+
+    <!-- ================= MENÚ DE CATEGORÍAS ================= -->
+    <nav class="n-menu" id="n-menu">
+        <div class="n-ancho n-menu-fila">
+            <div class="n-categorias" id="n-categorias">
+                <button type="button" class="activa" data-cat="">Portada</button>
+            </div>
+            <label class="n-buscar">
+                {{ icono("lupa") }}
+                <input type="search" id="n-buscar" placeholder="Buscar noticias..." autocomplete="off">
+            </label>
+        </div>
+    </nav>
+
+        <!-- Aviso de noticias nuevas -->
+    <button class="n-nuevas" id="n-nuevas" type="button">{{ icono("arriba") }} <span>Noticias nuevas</span></button>
+
+    <!-- ================= ÚLTIMO MINUTO (cinta que se mueve) ================= -->
+    <div class="n-cinta">
+        <div class="n-ancho n-cinta-fila">
+            <span class="n-cinta-titulo"><span class="n-punto"></span> Último minuto</span>
+            <div class="n-cinta-ventana"><div class="n-cinta-pista" id="n-cinta"></div></div>
+        </div>
+    </div>
+
+    <main class="n-ancho">
+
+        <!-- ================= DESTACADAS ================= -->
+        <section class="n-destacadas" id="n-destacadas">
+            <div class="n-esqueleto n-esq-grande"></div>
+            <div class="n-esqueleto"></div>
+            <div class="n-esqueleto"></div>
+            <div class="n-esqueleto"></div>
+        </section>
+
+        <div class="n-cuerpo">
+
+            <!-- ================= LISTA DE NOTICIAS ================= -->
+            <section class="n-principal">
+                <div class="n-seccion-titulo">
+                    <h2 id="n-titulo-lista">Últimas noticias</h2>
+                    <span class="n-actualizado"><span class="n-vivo"></span><span id="n-actualizado-texto">Buscando noticias...</span></span>
+                </div>
+                <div class="n-grilla" id="n-grilla">
+                    {% for i in range(6) %}<div class="n-esqueleto n-esq-tarjeta"></div>{% endfor %}
+                </div>
+                <div class="n-vacio" id="n-vacio" hidden>
+                    {{ icono("periodico") }}
+                    <p id="n-vacio-texto">No encontramos noticias.</p>
+                    <button type="button" class="n-boton" id="n-reintentar">{{ icono("recargar") }} Volver a intentar</button>
+                </div>
+                <button type="button" class="n-boton n-mas" id="n-mas" hidden>Ver más noticias</button>
+            </section>
+
+            <!-- ================= COLUMNA DERECHA ================= -->
+            <aside class="n-lateral">
+
+                <div class="n-caja n-versiculo">
+                    <p class="n-caja-titulo">Versículo del día</p>
+                    <blockquote>“{{ versiculo.texto }}”</blockquote>
+                    <cite>{{ versiculo.cita }}</cite>
+                </div>
+
+                <div class="n-caja">
+                    <p class="n-caja-titulo">Lo más reciente</p>
+                    <ol class="n-recientes" id="n-recientes"></ol>
+                </div>
+
+                <div class="n-caja n-senales">
+                    <p class="n-caja-titulo">Señales de los tiempos</p>
+                    <blockquote>“Cuando estas cosas comiencen a suceder, erguíos y levantad vuestra cabeza,
+                        porque vuestra redención está cerca.”</blockquote>
+                    <cite>Lucas 21:28</cite>
+                </div>
+
+                <div class="n-caja">
+                    <p class="n-caja-titulo">Secciones</p>
+                    <ul class="n-lista-categorias" id="n-lista-categorias"></ul>
+                </div>
+
+                <div class="n-caja n-promo">
+                    <img src="{{ url_for('static', filename='img/radio.jpg') }}" alt="{{ radio.nombre }}">
+                    <div>
+                        <p class="n-caja-titulo">Escucha la radio</p>
+                        <h3>{{ radio.nombre }}</h3>
+                        <p>{{ radio.lema }}</p>
+                        <a href="{{ url_for('inicio') }}#radio" class="n-boton">{{ icono("play") }} Escuchar en vivo</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- ================= PIE ================= -->
+    <footer class="n-pie">
+        <div class="n-ancho n-pie-fila">
+            <div class="n-pie-marca">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="">
+                <div>
+                    <strong>Bethel Noticias</strong>
+                    <p>Un servicio de {{ iglesia.nombre }} · {{ iglesia.lema }}</p>
+                </div>
+            </div>
+            <p class="n-pie-nota">Las noticias pertenecen a sus respectivos medios. Aquí mostramos el titular,
+                un breve resumen y el enlace para leer la nota completa en la página original.</p>
+            <a href="{{ url_for('inicio') }}" class="n-volver">{{ icono("volver") }} Ir a la página de la iglesia</a>
+        </div>
+    </footer>
+
+    <button class="n-arriba" type="button" aria-label="Volver arriba">{{ icono("arriba") }}</button>
+
+    <!-- Íconos que usa el JavaScript -->
+    <template id="ico-abrir">{{ icono("abrir") }}</template>
+    <template id="ico-reloj">{{ icono("reloj") }}</template>
+    <template id="ico-play">{{ icono("play") }}</template>
+
+    <script src="{{ url_for('static', filename='noticias.js') }}"></script>
+</body>
+</html>
