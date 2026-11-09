@@ -1,0 +1,164 @@
+/* =========================================================
+   TRANSICIÓN "BETHEL" AL CAMBIAR DE PÁGINA O SECCIÓN
+   ========================================================= */
+
+/* Mientras carga la página nueva, la pantalla queda tapada */
+html.bethel-entra::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    background: #0b1630;
+}
+
+.bethel-transicion {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+}
+
+.bethel-transicion.activa {
+    display: block;
+}
+
+/* Las dos cortinas: una dorada y otra azul encima */
+.bt-oro,
+.bt-capa {
+    position: absolute;
+    inset: 0;
+}
+
+.bt-oro {
+    background: linear-gradient(135deg, #f0d48a, #c9a24d 50%, #8f6d26);
+}
+
+.bt-capa {
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 42%, #1c3363 0%, #0f1e3d 45%, #070e20 100%);
+}
+
+/* Contenido del centro */
+.bt-contenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px;
+    text-align: center;
+}
+
+.bt-logo {
+    width: clamp(70px, 14vw, 104px);
+    height: auto;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 10px 30px rgba(201, 162, 77, 0.35));
+}
+
+.bt-palabra {
+    display: flex;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(52px, 13vw, 124px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    margin-right: -0.16em;
+}
+
+.bt-palabra span {
+    display: inline-block;
+    background: linear-gradient(180deg, #f7e3a6 0%, #c9a24d 55%, #9c7a2e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.bt-linea {
+    display: block;
+    width: 130px;
+    height: 2px;
+    margin: 20px 0 14px;
+    background: linear-gradient(90deg, transparent, #c9a24d, transparent);
+}
+
+.bt-texto {
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+}
+
+/* ----- Entrada: las cortinas suben y aparecen las letras ----- */
+.cubriendo .bt-oro {
+    animation: bt-entrar 0.5s cubic-bezier(0.77, 0, 0.18, 1) both;
+}
+
+.cubriendo .bt-capa {
+    animation: bt-entrar 0.5s cubic-bezier(0.77, 0, 0.18, 1) 0.1s both;
+}
+
+.cubriendo .bt-logo {
+    animation: bt-logo 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
+}
+
+.cubriendo .bt-palabra span {
+    animation: bt-letra 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(0.25s + var(--i) * 0.05s);
+}
+
+.cubriendo .bt-linea {
+    animation: bt-linea 0.5s ease 0.55s both;
+}
+
+.cubriendo .bt-texto {
+    animation: bt-aparecer 0.5s ease 0.6s both;
+}
+
+/* ----- Salida: las cortinas se van hacia arriba ----- */
+.saliendo .bt-capa {
+    animation: bt-irse 0.55s cubic-bezier(0.77, 0, 0.18, 1) both;
+}
+
+.saliendo .bt-oro {
+    animation: bt-irse 0.55s cubic-bezier(0.77, 0, 0.18, 1) 0.1s both;
+}
+
+.saliendo .bt-contenido {
+    animation: bt-subir 0.4s ease both;
+}
+
+@keyframes bt-entrar {
+    from { clip-path: inset(100% 0 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes bt-irse {
+    from { clip-path: inset(0 0 0 0); }
+    to   { clip-path: inset(0 0 100% 0); }
+}
+
+@keyframes bt-logo {
+    from { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes bt-letra {
+    from { opacity: 0; transform: translateY(0.4em); filter: blur(8px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes bt-linea {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+@keyframes bt-aparecer {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes bt-subir {
+    to { opacity: 0; transform: translateY(-24px); }
+}
