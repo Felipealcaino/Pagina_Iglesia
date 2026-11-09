@@ -80,7 +80,7 @@
 
         if (mismaPagina) {
             // Dentro de la misma página: solo los enlaces del menú
-            if (!enlace.closest('.menu, .panel-movil, .marca')) return;
+            if (!enlace.closest('.navbar, .panel-movil')) return;
             const destino = url.hash ? document.querySelector(url.hash) : null;
             if (!destino) return;
 
